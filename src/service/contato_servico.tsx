@@ -6,6 +6,7 @@
 
 import { Contato } from "../model/Contato";
 import { Conexao } from "../database/conexao";
+import { Alert } from 'react-native';
 
 const table = "contato";
 const db = Conexao.getConnection();
@@ -26,7 +27,10 @@ export default class ContatoServico {
                     console.log(txError);
                 }
             }
-        ));
+        )).catch(() => {
+            Alert.alert("Não foi possível inserir o contato no Banco de Dados...");
+            console.log("Não foi possível inserir o contato no Banco de Dados...");
+        });
     }
 
     static deleteById(id : number){
@@ -54,7 +58,10 @@ export default class ContatoServico {
                     console.log(txError);
                 }
             }
-        ));
+        )).catch(() => {
+            Alert.alert("Não foi possível atualizar o contato no Banco de Dados...");
+            console.log("Não foi possível atualizar o contato no Banco de Dados...");
+        });
     }
 
     static findById(id : number){
@@ -69,7 +76,10 @@ export default class ContatoServico {
                     console.log(txError);
                 }
             }
-        ));
+        )).catch(() => {
+            Alert.alert("Não foi possível encontrar o contato no Banco de Dados...");
+            console.log("Não foi possível encontrar o contato no Banco de Dados...");
+        });
     }
 
     static findAll(){        
@@ -83,6 +93,9 @@ export default class ContatoServico {
                     console.log(txError);
                 }
             }
-        ));
+        )).catch(() => {
+            Alert.alert("Não foi possível encontrar os contatos no Banco de Dados...");
+            console.log("Não foi possível encontrar os contatos no Banco de Dados...");
+        });
     }
 }

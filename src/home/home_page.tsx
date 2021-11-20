@@ -58,6 +58,7 @@ export default class App extends React.Component {
         if (this.state.formularioId != null || this.state.formularioId != undefined) {
             ContatoServico.deleteById(id);
             Alert.alert("Contato excluído com sucesso!");
+            console.log("Contato excluído com sucesso!");
         }
     }
     
@@ -93,6 +94,7 @@ export default class App extends React.Component {
             Alert.alert("Novo contato inserido!");
         } else {
             Alert.alert("Não foi possível inserir o novo contato...");
+            console.log("Não foi possível inserir o novo contato...");
         }
 
         return contato;
@@ -109,6 +111,7 @@ export default class App extends React.Component {
                 console.log("ID encontrado!");
             } else {
                 Alert.alert("ID não encontrado...");
+                console.log("ID não encontrado...");
             }
         }), (error) => {
             console.log(error);
@@ -135,9 +138,11 @@ export default class App extends React.Component {
                     formularioNatural: contatopesquisa.cidadeNatural,
                 });
                 
-                Alert.alert("Contato atualizado!"); 
+                Alert.alert("Contato atualizado!");
+                console.log("Contato atualizado!");
             } else {
-                Alert.alert("Não foi possível atualizar este contato...");
+                Alert.alert("Não foi possível encontrar este contato...");
+                console.log("Não foi possível encontrar este contato...");
             }
         }), (error) => {
             console.log(error);
@@ -156,6 +161,7 @@ export default class App extends React.Component {
         //const { animal } = animal;
         
         const contatoList = lista_array_dados_contato.map((item, key) => {
+            key++;
             return (
                 <> 
                     <Text>ID: {item.id}, Nome: {item.nome}, E-mail: {item.email}, Natural: {item.cidadeNatural}</Text>
@@ -167,46 +173,41 @@ export default class App extends React.Component {
             <View style={styles.container}>
                 <Text style={{ fontSize: 20, paddingBottom: 20 }}>CRUD de Contatos</Text>
                 <TextInput
-                    placeholder="Digite o ID que deseja pesquisar"
                     style={styles.textInput}
+                    placeholder="Digite o ID que deseja pesquisar"
                     onChangeText={Id_pesquisar => { this.setState({ Id_pesquisar: Id_pesquisar }) }}
                     value={Id_pesquisar}
+                    keyboardType="numeric"
                 />
 
                 <Text>{formularioId}</Text>
                 <TextInput
-                    placeholder="Digite o nome do novo contato"
                     style={styles.textInput}
+                    placeholder="Digite o nome do novo contato"
                     //a cada letra digitada (change) ajusta o state
                     onChangeText={formularioNome => { this.setState({ formularioNome: formularioNome }) }}
                     value={formularioNome}
                 />
 
                 <TextInput
-                    placeholder="Digite o e-mail..."
                     style={styles.textInput}
+                    placeholder="Digite o e-mail..."
                     //a cada letra digitada (change) ajusta o state
                     onChangeText={formularioEmail => { this.setState({ formularioEmail: formularioEmail }) }}
                     value={formularioEmail}
                 />
 
                 <TextInput
-                    placeholder="Digite a cidade natal..."
                     style={styles.textInput}
+                    placeholder="Digite a cidade natal..."
                     // a cada letra digitada (change) ajusta o state
                     onChangeText={formularioNatural => { this.setState({ formularioNatural: formularioNatural }) }}
                     value={formularioNatural}
                 />
 
                 <View style={styles.containerTouch}>
-                    <TouchableOpacity onPress={() => { formularioNome == null ? Alert.alert("O campo 'nome' não pode ser vazio!") : this.insertContato(formularioNome, formularioEmail, formularioNatural)}} style = {{ alignItems: "center", backgroundColor: 'green' }}>
+                    <TouchableOpacity onPress={() => { formularioNome == null || formularioEmail == null || formularioNatural == null ? Alert.alert("Preencha todos os campos do formulário!") : this.insertContato(formularioNome, formularioEmail, formularioNatural)}} style = {{ alignItems: "center", backgroundColor: 'green' }}>
                         <Icon name="md-add" size={30} color="white" />
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.containerTouch}>
-                    <TouchableOpacity onPress={() => { formularioId == null ? Alert.alert("Não há objetos para atualizar, faça uma pesquisa...") : this.atualizaContato(formularioId,formularioNome, formularioEmail, formularioNatural)}} style = {{ alignItems: "center", backgroundColor: 'green' }}>
-                        <Icon name="md-refresh" size={30} color="white" />
                     </TouchableOpacity>
                 </View>
 
@@ -217,10 +218,14 @@ export default class App extends React.Component {
                 </View>
 
                 <View style={styles.containerTouch}>
+                    <TouchableOpacity onPress={() => { formularioId == null ? Alert.alert("Não há objetos para atualizar, faça uma pesquisa...") : this.atualizaContato(formularioId, formularioNome, formularioEmail, formularioNatural)}} style = {{ alignItems: "center", backgroundColor: 'green' }}>
+                        <Icon name="md-refresh" size={30} color="white" />
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.containerTouch}>
                     <TouchableOpacity onPress={() => { formularioId == null ? Alert.alert("O campo ID não pode ser vazio!") : this.deleteContato(Id_pesquisar) }} style = {{ alignItems: "center", backgroundColor: 'green' }}>
-                        <TextInput placeholder="apagar">
-                            <Icon name="md-remove" size={30} color="white" />
-                        </TextInput>
+                        <Icon name="md-remove" size={30} color="white" />
                     </TouchableOpacity>
                 </View>
 
@@ -239,15 +244,16 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
 
-    textInput:{
+    textInput: {
         alignItems: "center", 
-        width: 200, 
-        height: 40, 
-        borderColor: 'gray', 
+        width: 220, 
+        height: 40,
+        margin: 5,
+        borderColor: "gray", 
         borderWidth: 1,
     },
 
-    containerTouch:{
+    containerTouch: {
         width: 200,
         padding: 10,
     }

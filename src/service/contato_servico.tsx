@@ -6,9 +6,8 @@
 
 import { Contato } from "../model/Contato";
 import { Conexao } from "../database/conexao";
-import { SQLError } from "expo-sqlite";
 
-const table = "contato"
+const table = "contato";
 const db = Conexao.getConnection();
 
 export default class ContatoServico {
@@ -47,7 +46,7 @@ export default class ContatoServico {
     static updateByObjeto(param : Contato){
         return new Promise((resolve, reject) => db.transaction(
             tx => {
-                tx.executeSql(`update ${table} set nome = ? , email = ? , natural = ? where id = ?;`,
+                tx.executeSql(`update ${table} set nome = ? , email = ? , cidadeNatural = ? where id = ?;`,
                 [param.id, param.nome, param.email, param.cidadeNatural], () => {
                 }), (sqlError) => {
                     console.log(sqlError);

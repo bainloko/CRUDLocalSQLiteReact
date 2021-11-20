@@ -12,7 +12,7 @@ var atualizar = 0 //variavel do professor? // use 1 para apagar e refazer a tabe
 export default class DatabaseInit {
     constructor(){
         db = Conexao.getConnection();
-        db.exec([{sql: 'PRAGMA foreign_keys=ON;', args: []}], false, () => console.log("Chaves Estrangeiras Ligadas"));
+        db.exec([{ sql: 'PRAGMA foreign_keys=ON;', args: [] }], false, () => console.log("Chaves Estrangeiras Ligadas"));
         this.InitDB();
     }
 
@@ -48,6 +48,8 @@ export default class DatabaseInit {
             }, (error) => {
                 console.log("Um erro aconteceu na execução do SQL: " + JSON.stringify(error));
                 console.log("\n", error);
+            }, () => {
+                console.log("Transação concluída com sucesso!");
             }
         );
     }

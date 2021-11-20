@@ -5,8 +5,11 @@
 */
 
 export class Contato {
-    constructor(){
-
+    constructor(id?: number, nome?: string, email?: string, cidadeNatural?: string){
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.cidadeNatural = cidadeNatural;
     }
 
     public id : number;

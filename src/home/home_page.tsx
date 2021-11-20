@@ -4,7 +4,7 @@
 * 20/11/2021
 */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
 import ContatoServico from '../service/contato_servico';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -123,7 +123,7 @@ export default class App extends React.Component {
                     contatopesquisa.id = item.id;
                     contatopesquisa.nome = item.nome;
                     contatopesquisa.email = item.email;
-                    contatopesquisa.cidadeNatural = item.natural;
+                    contatopesquisa.cidadeNatural = item.cidadeNatural;
                 });
 
                 //o SetState abaixo mostra para o usuário o objeto recuperado do banco, e atualmente somente em memória
@@ -158,7 +158,7 @@ export default class App extends React.Component {
         const contatoList = lista_array_dados_contato.map((item, key) => {
             return (
                 <> 
-                    <Text>id:{item.id} nome:{item.nome} email:{item.email} natural:{item.cidadeNatural}</Text>
+                    <Text>ID: {item.id}, Nome: {item.nome}, E-mail: {item.email}, Natural: {item.cidadeNatural}</Text>
                 </>
             );
         });
@@ -199,25 +199,25 @@ export default class App extends React.Component {
                 />
 
                 <View style={styles.containerTouch}>
-                    <TouchableOpacity onPress={() =>  {formularioNome == null  ? Alert.alert("O campo 'nome' não pode ser vazio!") :this.insertContato(formularioNome, formularioEmail, formularioNatural)}} style={{ alignItems: "center", backgroundColor: 'green' }}>
+                    <TouchableOpacity onPress={() => { formularioNome == null ? Alert.alert("O campo 'nome' não pode ser vazio!") : this.insertContato(formularioNome, formularioEmail, formularioNatural)}} style = {{ alignItems: "center", backgroundColor: 'green' }}>
                         <Icon name="md-add" size={30} color="white" />
                     </TouchableOpacity>
                 </View>
 
                 <View style={styles.containerTouch}>
-                    <TouchableOpacity onPress={() =>  {formularioId == null  ? Alert.alert("Não há objetos para atualizar, faça uma pesquisa...") :this.atualizaContato(formularioId,formularioNome, formularioEmail, formularioNatural)}} style={{ alignItems: "center", backgroundColor: 'green' }}>
+                    <TouchableOpacity onPress={() => { formularioId == null ? Alert.alert("Não há objetos para atualizar, faça uma pesquisa...") : this.atualizaContato(formularioId,formularioNome, formularioEmail, formularioNatural)}} style = {{ alignItems: "center", backgroundColor: 'green' }}>
                         <Icon name="md-refresh" size={30} color="white" />
                     </TouchableOpacity>
                 </View>
 
                 <View style={styles.containerTouch}>
-                    <TouchableOpacity onPress={() => { Id_pesquisar == null ? Alert.alert("O campo ID não pode ser vazio!") : this.localizaContato(Id_pesquisar) }} style={{ alignItems: "center", backgroundColor: 'green' }}>
+                    <TouchableOpacity onPress={() => { Id_pesquisar == null ? Alert.alert("O campo ID não pode ser vazio!") : this.localizaContato(Id_pesquisar) }} style = {{ alignItems: "center", backgroundColor: 'green' }}>
                         <Icon name="md-search" size={30} color="white" />
                     </TouchableOpacity>
                 </View>
 
                 <View style={styles.containerTouch}>
-                    <TouchableOpacity onPress={() => { formularioId == null ? Alert.alert("O campo ID não pode ser vazio!") : this.deleteContato(Id_pesquisar) }} style={{ alignItems: "center", backgroundColor: 'green' }}>
+                    <TouchableOpacity onPress={() => { formularioId == null ? Alert.alert("O campo ID não pode ser vazio!") : this.deleteContato(Id_pesquisar) }} style = {{ alignItems: "center", backgroundColor: 'green' }}>
                         <TextInput placeholder="apagar">
                             <Icon name="md-remove" size={30} color="white" />
                         </TextInput>

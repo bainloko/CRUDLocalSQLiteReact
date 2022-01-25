@@ -1,7 +1,7 @@
 /*
 * @bainloko
-* DDM I
-* 20/11/2021
+* DDM I, DDM II
+* 20/11/2021, 25/01/2022
 */
 
 import { Conexao } from "./conexao";
@@ -24,7 +24,8 @@ export default class DatabaseInit {
                     id integer primary key autoincrement,
                     nome text,
                     email text,
-                    cidadeNatural text
+                    cidadeNatural text,
+                    idade integer
                 );`,
             ];
         } else {
@@ -34,7 +35,8 @@ export default class DatabaseInit {
                     id integer primary key autoincrement,
                     nome text,
                     email text,
-                    cidadeNatural text
+                    cidadeNatural text,
+                    idade integer
                 );`,
             ];
         }

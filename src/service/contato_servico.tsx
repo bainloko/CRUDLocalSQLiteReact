@@ -1,7 +1,7 @@
 /*
 * @bainloko
-* DDM I
-* 20/11/2021
+* DDM I, DDM II
+* 20/11/2021, 25/01/2022
 */
 
 import { Contato } from "../model/Contato";
@@ -15,9 +15,9 @@ export default class ContatoServico {
     static addData(param : Contato){
         return new Promise((resolve, reject) => db.transaction(
             tx => {
-                tx.executeSql(`insert into ${table} (nome, email, cidadeNatural)
-                values(?, ?, ?)`,
-                [param.nome, param.email, param.cidadeNatural],
+                tx.executeSql(`insert into ${table} (nome, email, cidadeNatural, idade)
+                values(?, ?, ?, ?)`,
+                [param.nome, param.email, param.cidadeNatural, param.idade],
                 (_, { insertId, rows }) => {
                     console.log("ID insert" + insertId);
                     resolve(insertId);
@@ -50,8 +50,8 @@ export default class ContatoServico {
     static updateByObjeto(param : Contato){
         return new Promise((resolve, reject) => db.transaction(
             tx => {
-                tx.executeSql(`update ${table} set nome = ? , email = ? , cidadeNatural = ? where id = ?;`,
-                [param.id, param.nome, param.email, param.cidadeNatural], () => {
+                tx.executeSql(`update ${table} set nome = ? , email = ? , cidadeNatural = ? , idade = ? where id = ?;`,
+                [param.id, param.nome, param.email, param.cidadeNatural, param.idade], () => {
                 }), (sqlError) => {
                     console.log(sqlError);
                 }, (txError) => {

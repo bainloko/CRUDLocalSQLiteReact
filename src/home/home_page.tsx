@@ -1,7 +1,7 @@
 /*
 * código de aula por @diegonevesdafontoura, adaptado quase que completamente (só faltou organizar a ordem dos blocos de código) por @bainloko
-* DDM I
-* 20/11/2021
+* DDM I, DDM II
+* 20/11/2021, 25/01/2022
 */
 
 import React, { useState } from 'react';
@@ -26,7 +26,8 @@ export default class App extends React.Component {
         formularioId: null,
         formularioNome: null,
         formularioEmail: null,
-        formularioNatural: null
+        formularioNatural: null,
+        formularioIdade: null,
     }
     
     //acionado quando o componente é montado
@@ -41,6 +42,11 @@ export default class App extends React.Component {
             this.findAllContato();
         }
     }
+    
+    instanciarContato = () => {
+        let contato : Contato = new Contato(); //cria objeto na memória
+        return contato;
+    }
 
     findAllContato = () => {
         ContatoServico.findAll().then((response: any) => {
@@ -52,40 +58,15 @@ export default class App extends React.Component {
             console.log(error);
         }
     }
+    
+    insertContato = (item1, item2, item3, item4) => {
+        let contato = new Contato(); //cria objeto na memória
+        contato.nome = item1; //seta o atributo nome do objeto 
+        contato.email = item2; //seta o atributo email do objeto 
+        contato.cidadeNatural = item3; //seta o atributo cidade natural do objeto
+        contato.idade = item4; //seta o atributo idade do objeto
+        //com o valor(state) do item
 
-    deleteContato = (id) => {
-        this.findContatoById(id);
-        if (this.state.formularioId != null || this.state.formularioId != undefined) {
-            ContatoServico.deleteById(id);
-            Alert.alert("Contato excluído com sucesso!");
-            console.log("Contato excluído com sucesso!");
-        }
-    }
-    
-    atualizaContato = (item0, item1, item2, item3) => {
-        let contato = new Contato(); //cria objeto na memória
-        contato.id = item0; //seta o atributo id do objeto 
-        contato.nome = item1; //seta o atributo nome do objeto 
-        contato.email = item2; //seta o atributo email do objeto 
-        contato.cidadeNatural = item3; //seta o atributo cidade natural do objeto com o valor(state) do item
-    
-        ContatoServico.updateByObjeto(contato).then((response: any) => {
-            if (response._array.length > 0 && response != null && response != undefined) {
-                Alert.alert("Objeto atualizado!");
-            } else {
-                Alert.alert("Nome não encontrado...");
-            }
-        }), (error) => {
-            console.log(error);
-        }
-    }
-    
-    insertContato = (item1, item2, item3) => {
-        let contato = new Contato(); //cria objeto na memória
-        contato.nome = item1; //seta o atributo nome do objeto 
-        contato.email = item2; //seta o atributo email do objeto 
-        contato.cidadeNatural = item3; //seta o atributo cidade natural do objeto com o valor(state) do item
-    
         //cria um id no banco para persistir o objeto
         const insertId = ContatoServico.addData(contato);
 
@@ -100,9 +81,57 @@ export default class App extends React.Component {
         return contato;
     }
     
-    instanciarContato = () => {
-        let contato : Contato = new Contato(); //cria objeto na memória
-        return contato;
+    localizaContato = (id) => {
+        ContatoServico.findById(id).then((response: any) => {
+            if (response._array.length > 0 && response != null && response != undefined) {
+                let contatopesquisa : Contato = new Contato(); //cria objeto na memória
+                const contatoretorno = response._array.map((item, key) => {
+                    contatopesquisa.id = item.id;
+                    contatopesquisa.nome = item.nome;
+                    contatopesquisa.email = item.email;
+                    contatopesquisa.cidadeNatural = item.cidadeNatural;
+                    contatopesquisa.idade = item.idade;
+                });
+
+                //o SetState abaixo mostra para o usuário o objeto recuperado do banco, e atualmente somente em memória
+                this.setState({
+                    contato: contatopesquisa,
+                    formularioId: contatopesquisa.id,
+                    formularioNome: contatopesquisa.nome,
+                    formularioEmail: contatopesquisa.email,
+                    formularioNatural: contatopesquisa.cidadeNatural,
+                    formularioIdade: contatopesquisa.idade,
+                });
+                
+                Alert.alert("Contato atualizado!");
+                console.log("Contato atualizado!");
+            } else {
+                Alert.alert("Não foi possível encontrar este contato...");
+                console.log("Não foi possível encontrar este contato...");
+            }
+        }), (error) => {
+            console.log(error);
+        }
+    }
+
+    atualizaContato = (item0, item1, item2, item3, item4) => {
+        let contato = new Contato(); //cria objeto na memória
+        contato.id = item0; //seta o atributo id do objeto 
+        contato.nome = item1; //seta o atributo nome do objeto 
+        contato.email = item2; //seta o atributo email do objeto 
+        contato.cidadeNatural = item3; //seta o atributo cidade natural do objeto
+        contato.idade = item4; //seta o atributo idade do objeto
+        //com o valor(state) do item
+
+        ContatoServico.updateByObjeto(contato).then((response: any) => {
+            if (response._array.length > 0 && response != null && response != undefined) {
+                Alert.alert("Objeto atualizado!");
+            } else {
+                Alert.alert("Nome não encontrado...");
+            }
+        }), (error) => {
+            console.log(error);
+        }
     }
     
     findContatoById = (id) => {
@@ -117,35 +146,15 @@ export default class App extends React.Component {
             console.log(error);
         }
     }
-    
-    localizaContato = (id) => {
-        ContatoServico.findById(id).then((response: any) => {
-            if (response._array.length > 0 && response != null && response != undefined) {
-                let contatopesquisa : Contato = new Contato(); //cria objeto na memória
-                const contatoretorno = response._array.map((item, key) => {
-                    contatopesquisa.id = item.id;
-                    contatopesquisa.nome = item.nome;
-                    contatopesquisa.email = item.email;
-                    contatopesquisa.cidadeNatural = item.cidadeNatural;
-                });
 
-                //o SetState abaixo mostra para o usuário o objeto recuperado do banco, e atualmente somente em memória
-                this.setState({
-                    contato: contatopesquisa,
-                    formularioId: contatopesquisa.id,
-                    formularioNome: contatopesquisa.nome,
-                    formularioEmail: contatopesquisa.email,
-                    formularioNatural: contatopesquisa.cidadeNatural,
-                });
-                
-                Alert.alert("Contato atualizado!");
-                console.log("Contato atualizado!");
-            } else {
-                Alert.alert("Não foi possível encontrar este contato...");
-                console.log("Não foi possível encontrar este contato...");
-            }
-        }), (error) => {
-            console.log(error);
+    deleteContato = (id) => {
+        this.findContatoById(id);
+        if (this.state.formularioId != null || this.state.formularioId != undefined) {
+            ContatoServico.deleteById(id);
+            Alert.alert("Contato excluído com sucesso!");
+            console.log("Contato excluído com sucesso!");
+
+            //limpar os campos da visão
         }
     }
 
@@ -155,7 +164,7 @@ export default class App extends React.Component {
     //aqui temos a renderização da tela (visão)
     render() {
         //extrai as propriedades entre chaves
-        const {contato, lista_array_dados_contato, value, Id_pesquisar, formularioId, formularioNome, formularioEmail, formularioNatural} = this.state;
+        const {contato, lista_array_dados_contato, value, Id_pesquisar, formularioId, formularioNome, formularioEmail, formularioNatural, formularioIdade} = this.state;
         //se tivermos, por exemplo, animais listados oriundos do banco
         //a lista é mostrada na visão
         //const { animal } = animal;
@@ -164,7 +173,7 @@ export default class App extends React.Component {
             key++;
             return (
                 <> 
-                    <Text>ID: {item.id}, Nome: {item.nome}, E-mail: {item.email}, Natural: {item.cidadeNatural}</Text>
+                    <Text>ID: {item.id}, Nome: {item.nome}, E-mail: {item.email}, Natural: {item.cidadeNatural}, Idade: {item.idade}</Text>
                 </>
             );
         });
@@ -205,8 +214,16 @@ export default class App extends React.Component {
                     value={formularioNatural}
                 />
 
+                <TextInput
+                    style={styles.textInput}
+                    placeholder="Digite a idade..."
+                    onChangeText={formularioIdade => { this.setState({ formularioIdade: formularioIdade }) }}
+                    value={formularioIdade}
+                    keyboardType="numeric"
+                />
+
                 <View style={styles.containerTouch}>
-                    <TouchableOpacity onPress={() => { formularioNome == null || formularioEmail == null || formularioNatural == null ? Alert.alert("Preencha todos os campos do formulário!") : this.insertContato(formularioNome, formularioEmail, formularioNatural)}} style = {{ alignItems: "center", backgroundColor: 'green' }}>
+                    <TouchableOpacity onPress={() => { formularioNome == null || formularioEmail == null || formularioNatural == null ? Alert.alert("Preencha todos os campos do formulário!") : this.insertContato(formularioNome, formularioEmail, formularioNatural, formularioIdade)}} style = {{ alignItems: "center", backgroundColor: 'green' }}>
                         <Icon name="md-add" size={30} color="white" />
                     </TouchableOpacity>
                 </View>
@@ -218,7 +235,7 @@ export default class App extends React.Component {
                 </View>
 
                 <View style={styles.containerTouch}>
-                    <TouchableOpacity onPress={() => { formularioId == null ? Alert.alert("Não há objetos para atualizar, faça uma pesquisa...") : this.atualizaContato(formularioId, formularioNome, formularioEmail, formularioNatural)}} style = {{ alignItems: "center", backgroundColor: 'green' }}>
+                    <TouchableOpacity onPress={() => { formularioId == null ? Alert.alert("Não há objetos para atualizar, faça uma pesquisa...") : this.atualizaContato(formularioId, formularioNome, formularioEmail, formularioNatural, formularioIdade)}} style = {{ alignItems: "center", backgroundColor: 'green' }}>
                         <Icon name="md-refresh" size={30} color="white" />
                     </TouchableOpacity>
                 </View>

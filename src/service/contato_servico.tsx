@@ -15,9 +15,9 @@ export default class ContatoServico {
     static addData(param : Contato){
         return new Promise((resolve, reject) => db.transaction(
             tx => {
-                tx.executeSql(`insert into ${table} (nome, email, cidadeNatural, idade)
+                tx.executeSql(`insert into ${table} (nome, email, cidadeNatural, idade, corOlhos)
                 values(?, ?, ?, ?)`,
-                [param.nome, param.email, param.cidadeNatural, param.idade],
+                [param.nome, param.email, param.cidadeNatural, param.idade, param.corOlhos],
                 (_, { insertId, rows }) => {
                     console.log("ID insert" + insertId);
                     resolve(insertId);
@@ -50,8 +50,8 @@ export default class ContatoServico {
     static updateByObjeto(param : Contato){
         return new Promise((resolve, reject) => db.transaction(
             tx => {
-                tx.executeSql(`update ${table} set nome = ? , email = ? , cidadeNatural = ? , idade = ? where id = ?;`,
-                [param.id, param.nome, param.email, param.cidadeNatural, param.idade], () => {
+                tx.executeSql(`update ${table} set nome = ? , email = ? , cidadeNatural = ? , idade = ? , corOlhos = ? where id = ?;`,
+                [param.id, param.nome, param.email, param.cidadeNatural, param.idade, param.corOlhos], () => {
                 }), (sqlError) => {
                     console.log(sqlError);
                 }, (txError) => {

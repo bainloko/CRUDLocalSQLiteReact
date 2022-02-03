@@ -25,7 +25,8 @@ export default class DatabaseInit {
                     nome text,
                     email text,
                     cidadeNatural text,
-                    idade integer
+                    idade integer,
+                    corOlhos string,
                 );`,
             ];
         } else {
@@ -36,7 +37,8 @@ export default class DatabaseInit {
                     nome text,
                     email text,
                     cidadeNatural text,
-                    idade integer
+                    idade integer,
+                    corOlhos string,
                 );`,
             ];
         }

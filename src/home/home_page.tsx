@@ -6,6 +6,7 @@
 
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import Select from 'react-select';
 import ContatoServico from '../service/contato_servico';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Contato } from '../model/Contato';
@@ -28,6 +29,7 @@ export default class App extends React.Component {
         formularioEmail: null,
         formularioNatural: null,
         formularioIdade: null,
+        formularioOlhos: null,
     }
     
     //acionado quando o componente é montado
@@ -44,7 +46,7 @@ export default class App extends React.Component {
     }
     
     instanciarContato = () => {
-        let contato : Contato = new Contato(); //cria objeto na memória
+        let contato : Contato = new Contato(3); //cria objeto na memória (valor 3 significa que a cor dos olhos é outra ou não especificada. Isso vai ser alterado quando o usuário procurar alguma entrada no banco de dados ou quando setar uma nova entrada)
         return contato;
     }
 
@@ -59,12 +61,13 @@ export default class App extends React.Component {
         }
     }
     
-    insertContato = (item1, item2, item3, item4) => {
-        let contato = new Contato(); //cria objeto na memória
+    insertContato = (item1, item2, item3, item4, item5) => {
+        let contato = new Contato(3); //cria objeto na memória (valor 3 significa que a cor dos olhos é outra ou não especificada. Isso vai ser alterado quando o usuário procurar alguma entrada no banco de dados ou quando setar uma nova entrada)
         contato.nome = item1; //seta o atributo nome do objeto 
         contato.email = item2; //seta o atributo email do objeto 
         contato.cidadeNatural = item3; //seta o atributo cidade natural do objeto
         contato.idade = item4; //seta o atributo idade do objeto
+        contato.corOlhos = item5; //seta o atributo cor dos olhos do objeto
         //com o valor(state) do item
 
         //cria um id no banco para persistir o objeto
@@ -84,13 +87,14 @@ export default class App extends React.Component {
     localizaContato = (id) => {
         ContatoServico.findById(id).then((response: any) => {
             if (response._array.length > 0 && response != null && response != undefined) {
-                let contatopesquisa : Contato = new Contato(); //cria objeto na memória
+                let contatopesquisa : Contato = new Contato(3); //cria objeto na memória (valor 3 significa que a cor dos olhos é outra ou não especificada. Isso vai ser alterado quando o usuário procurar alguma entrada no banco de dados ou quando setar uma nova entrada)
                 const contatoretorno = response._array.map((item, key) => {
                     contatopesquisa.id = item.id;
                     contatopesquisa.nome = item.nome;
                     contatopesquisa.email = item.email;
                     contatopesquisa.cidadeNatural = item.cidadeNatural;
                     contatopesquisa.idade = item.idade;
+                    contatopesquisa.corOlhos = item.corOlhos;
                 });
 
                 //o SetState abaixo mostra para o usuário o objeto recuperado do banco, e atualmente somente em memória
@@ -101,6 +105,7 @@ export default class App extends React.Component {
                     formularioEmail: contatopesquisa.email,
                     formularioNatural: contatopesquisa.cidadeNatural,
                     formularioIdade: contatopesquisa.idade,
+                    formularioOlhos: contatopesquisa.corOlhos,
                 });
                 
                 Alert.alert("Contato atualizado!");
@@ -114,13 +119,14 @@ export default class App extends React.Component {
         }
     }
 
-    atualizaContato = (item0, item1, item2, item3, item4) => {
-        let contato = new Contato(); //cria objeto na memória
+    atualizaContato = (item0, item1, item2, item3, item4, item5) => {
+        let contato = new Contato(3); //cria objeto na memória (valor 3 significa que a cor dos olhos é outra ou não especificada. Isso vai ser alterado quando o usuário procurar alguma entrada no banco de dados ou quando setar uma nova entrada)
         contato.id = item0; //seta o atributo id do objeto 
         contato.nome = item1; //seta o atributo nome do objeto 
         contato.email = item2; //seta o atributo email do objeto 
         contato.cidadeNatural = item3; //seta o atributo cidade natural do objeto
         contato.idade = item4; //seta o atributo idade do objeto
+        contato.corOlhos = item5; //seta o atributo cor dos olhos do objeto
         //com o valor(state) do item
 
         ContatoServico.updateByObjeto(contato).then((response: any) => {
@@ -164,7 +170,7 @@ export default class App extends React.Component {
     //aqui temos a renderização da tela (visão)
     render() {
         //extrai as propriedades entre chaves
-        const {contato, lista_array_dados_contato, value, Id_pesquisar, formularioId, formularioNome, formularioEmail, formularioNatural, formularioIdade} = this.state;
+        const {contato, lista_array_dados_contato, value, Id_pesquisar, formularioId, formularioNome, formularioEmail, formularioNatural, formularioIdade, formularioOlhos} = this.state;
         //se tivermos, por exemplo, animais listados oriundos do banco
         //a lista é mostrada na visão
         //const { animal } = animal;
@@ -173,7 +179,7 @@ export default class App extends React.Component {
             key++;
             return (
                 <> 
-                    <Text>ID: {item.id}, Nome: {item.nome}, E-mail: {item.email}, Natural: {item.cidadeNatural}, Idade: {item.idade}</Text>
+                    <Text>ID: {item.id}, Nome: {item.nome}, E-mail: {item.email}, Natural: {item.cidadeNatural}, Idade: {item.idade}, Cor dos olhos: {item.corOlhos}</Text>
                 </>
             );
         });
@@ -222,8 +228,14 @@ export default class App extends React.Component {
                     keyboardType="numeric"
                 />
 
+                <select
+                    style={styles.textInput}
+                    placeholder="Selecione a cor dos olhos..."
+                    value={formularioOlhos}
+                />
+
                 <View style={styles.containerTouch}>
-                    <TouchableOpacity onPress={() => { formularioNome == null || formularioEmail == null || formularioNatural == null ? Alert.alert("Preencha todos os campos do formulário!") : this.insertContato(formularioNome, formularioEmail, formularioNatural, formularioIdade)}} style = {{ alignItems: "center", backgroundColor: 'green' }}>
+                    <TouchableOpacity onPress={() => { formularioNome == null || formularioEmail == null || formularioNatural || formularioIdade || formularioOlhos == null ? Alert.alert("Preencha todos os campos do formulário!") : this.insertContato(formularioNome, formularioEmail, formularioNatural, formularioIdade, formularioOlhos)}} style = {{ alignItems: "center", backgroundColor: 'green' }}>
                         <Icon name="md-add" size={30} color="white" />
                     </TouchableOpacity>
                 </View>
@@ -235,7 +247,7 @@ export default class App extends React.Component {
                 </View>
 
                 <View style={styles.containerTouch}>
-                    <TouchableOpacity onPress={() => { formularioId == null ? Alert.alert("Não há objetos para atualizar, faça uma pesquisa...") : this.atualizaContato(formularioId, formularioNome, formularioEmail, formularioNatural, formularioIdade)}} style = {{ alignItems: "center", backgroundColor: 'green' }}>
+                    <TouchableOpacity onPress={() => { formularioId == null ? Alert.alert("Não há objetos para atualizar, faça uma pesquisa...") : this.atualizaContato(formularioId, formularioNome, formularioEmail, formularioNatural, formularioIdade, formularioOlhos)}} style = {{ alignItems: "center", backgroundColor: 'green' }}>
                         <Icon name="md-refresh" size={30} color="white" />
                     </TouchableOpacity>
                 </View>

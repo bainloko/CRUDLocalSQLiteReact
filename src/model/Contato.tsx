@@ -5,16 +5,7 @@
 */
 
 export class Contato {
-    constructor(corOlhosOpcao){
-        if (corOlhosOpcao == 0){
-            this.corOlhos = "Castanho";
-        } else if (corOlhosOpcao == 1){
-            this.corOlhos = "Azul";
-        } else if (corOlhosOpcao == 2){
-            this.corOlhos = "Verde";
-        } else {
-            this.corOlhos = "Outro, ou não especificado";
-        }
+    constructor(){
     }
 
     public id : number;

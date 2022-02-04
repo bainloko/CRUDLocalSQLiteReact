@@ -16,10 +16,10 @@ export default class ContatoServico {
         return new Promise((resolve, reject) => db.transaction(
             tx => {
                 tx.executeSql(`insert into ${table} (nome, email, cidadeNatural, idade, corOlhos)
-                values(?, ?, ?, ?)`,
+                values(?, ?, ?, ?, ?)`,
                 [param.nome, param.email, param.cidadeNatural, param.idade, param.corOlhos],
                 (_, { insertId, rows }) => {
-                    console.log("ID insert" + insertId);
+                    console.log("ID insert " + insertId);
                     resolve(insertId);
                 }), (sqlError) => {
                     console.log(sqlError);
@@ -51,7 +51,7 @@ export default class ContatoServico {
         return new Promise((resolve, reject) => db.transaction(
             tx => {
                 tx.executeSql(`update ${table} set nome = ? , email = ? , cidadeNatural = ? , idade = ? , corOlhos = ? where id = ?;`,
-                [param.id, param.nome, param.email, param.cidadeNatural, param.idade, param.corOlhos], () => {
+                [param.nome, param.email, param.cidadeNatural, param.idade, param.corOlhos, param.id], () => {
                 }), (sqlError) => {
                     console.log(sqlError);
                 }, (txError) => {
@@ -67,7 +67,7 @@ export default class ContatoServico {
     static findById(id : number){
         return new Promise((resolve, reject) => db.transaction(
             tx => {
-                tx.executeSql(`select * from ${table} where id=?`,
+                tx.executeSql(`select * from ${table} where id = ?;`,
                 [id], (_, { rows }) => {
                     resolve(rows);
                 }), (sqlError) => {

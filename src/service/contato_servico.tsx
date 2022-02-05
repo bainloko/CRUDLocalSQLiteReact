@@ -52,6 +52,7 @@ export default class ContatoServico {
             tx => {
                 tx.executeSql(`update ${table} set nome = ? , email = ? , cidadeNatural = ? , idade = ? , corOlhos = ? where id = ?;`,
                 [param.nome, param.email, param.cidadeNatural, param.idade, param.corOlhos, param.id], () => {
+                    return 1;
                 }), (sqlError) => {
                     console.log(sqlError);
                 }, (txError) => {

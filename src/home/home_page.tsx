@@ -10,7 +10,7 @@ import ContatoServico from '../service/contato_servico';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Contato } from '../model/Contato';
 
-var keyValue = 0, achou = 0;
+var key = 1, achou = 0;
 
 //métodos da home
 export default class App extends React.Component {
@@ -78,6 +78,7 @@ export default class App extends React.Component {
         //testa pra ver se deu certo a criação do id
         if (insertId != null || insertId != undefined) {
             Alert.alert("Novo contato inserido!");
+            console.log("Novo contato inserido!");
         } else {
             Alert.alert("Não foi possível inserir o novo contato...");
             console.log("Não foi possível inserir o novo contato...");
@@ -91,8 +92,6 @@ export default class App extends React.Component {
             if (response._array.length > 0 && response != null && response != undefined) {
                 let contatopesquisa : Contato = new Contato();
                 response._array.map((item, key) => {
-                    keyValue++;
-                    key = keyValue;
                     contatopesquisa.id = item.id;
                     contatopesquisa.nome = item.nome;
                     contatopesquisa.email = item.email;
@@ -110,13 +109,13 @@ export default class App extends React.Component {
                     formularioIdade: contatopesquisa.idade.toString(),
                     formularioOlhos: contatopesquisa.corOlhos
                 });
+
+                Alert.alert("Contato localizado!");
+                console.log("Contato localizado!");
             } else {
                 Alert.alert("Não foi possível encontrar este contato...");
                 console.log("Não foi possível encontrar este contato...");
             }
-
-        Alert.alert("Contato localizado!");
-        console.log("Contato localizado!");
         }), (error) => {
             console.log(error);
         }
@@ -132,16 +131,12 @@ export default class App extends React.Component {
         contato.corOlhos = item5;
         //com o valor(state) do item
 
-        ContatoServico.updateByObjeto(contato).then((response: any) => {
-            if (response._array.length > 0 && response != null && response != undefined) {
-                Alert.alert("Contato atualizado!");
-                console.log("Contato atualizado!");
-            } else {
-                Alert.alert("Nome não encontrado...");
-                console.log("Nome não encontrado...");
-            }
-        }), (error) => {
-            console.log(error);
+        if (ContatoServico.updateByObjeto(contato)) {
+            Alert.alert("Contato atualizado!");
+            console.log("Contato atualizado!");
+        } else {
+            Alert.alert("Nome não encontrado...");
+            console.log("Nome não encontrado...");
         }
     }
 
@@ -162,7 +157,7 @@ export default class App extends React.Component {
     }
 
     deleteContato = (id) => {
-        if (achou == 0){
+        if (achou == 1){
             if (this.state.formularioId != null || this.state.formularioId != undefined) {
                 ContatoServico.deleteById(id);
                 Alert.alert("Contato excluído com sucesso!");
@@ -188,11 +183,9 @@ export default class App extends React.Component {
         //const { animal } = animal;
         
         const contatoList = lista_array_dados_contato.map((item, key) => {
-            keyValue++;
-            key = keyValue;
             return (
-                <> 
-                    <Text key={keyValue.toString()}>ID: {item.id}, Nome: {item.nome}, E-mail: {item.email}, Natural: {item.cidadeNatural}, Idade: {item.idade}, Cor dos olhos: {item.corOlhos}</Text>
+                <>
+                    <Text>ID: {item.id}, Nome: {item.nome}, E-mail: {item.email}, Natural: {item.cidadeNatural}, Idade: {item.idade}, Cor dos olhos: {item.corOlhos}</Text>
                 </>
             );
         });
@@ -236,7 +229,7 @@ export default class App extends React.Component {
                     style={styles.textInput}
                     placeholder="Digite a idade..."
                     onChangeText={formularioIdade => { this.setState({ formularioIdade: formularioIdade }) }}
-                    value={formularioIdade.toString()} //mencionar em aula: erros child in a list e error checking, UI
+                    value={formularioIdade.toString()} //mencionar em aula: erros 'child in a list', select na home page e integração com o banco?
                     keyboardType="numeric"
                 />
 
@@ -248,7 +241,7 @@ export default class App extends React.Component {
                 />
 
                 <View style={styles.containerTouch}>
-                    <TouchableOpacity onPress={() => { (formularioNome || formularioEmail || formularioNatural || formularioIdade || formularioOlhos) == null ? Alert.alert("Preencha todos os campos do formulário!") : this.insertContato(formularioNome, formularioEmail, formularioNatural, formularioIdade, formularioOlhos)}} style = {{ alignItems: "center", backgroundColor: 'green' }}>
+                    <TouchableOpacity onPress={() => { (formularioNome || formularioEmail || formularioNatural || formularioIdade || formularioOlhos) == null ? Alert.alert("Preencha todos os campos do formulário!") : this.insertContato(formularioNome, formularioEmail, formularioNatural, formularioIdade, formularioOlhos) }} style = {{ alignItems: "center", backgroundColor: 'green' }}>
                         <Icon name="md-add" size={30} color="white" />
                     </TouchableOpacity>
                 </View>
@@ -260,7 +253,7 @@ export default class App extends React.Component {
                 </View>
 
                 <View style={styles.containerTouch}>
-                    <TouchableOpacity onPress={() => { Id_pesquisar == null ? Alert.alert("Não há objetos para atualizar, faça uma pesquisa...") : this.atualizaContato(Id_pesquisar, formularioNome, formularioEmail, formularioNatural, formularioIdade, formularioOlhos)} } style = {{ alignItems: "center", backgroundColor: 'green' }}>
+                    <TouchableOpacity onPress={() => { (Id_pesquisar != formularioId) || ((Id_pesquisar && formularioId) == (0 || null)) ? () => {(formularioNome || formularioEmail || formularioNatural || formularioIdade || formularioOlhos) == null ? Alert.alert("Preencha todos os campos do formulário!") : Alert.alert("Não há objetos para atualizar, faça uma pesquisa...") } : this.atualizaContato(formularioId, formularioNome, formularioEmail, formularioNatural, formularioIdade, formularioOlhos) }} style = {{ alignItems: "center", backgroundColor: 'green' }}>
                         <Icon name="md-refresh" size={30} color="white" />
                     </TouchableOpacity>
                 </View>

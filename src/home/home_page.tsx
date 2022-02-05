@@ -229,7 +229,7 @@ export default class App extends React.Component {
                     style={styles.textInput}
                     placeholder="Digite a idade..."
                     onChangeText={formularioIdade => { this.setState({ formularioIdade: formularioIdade }) }}
-                    value={formularioIdade.toString()} //mencionar em aula: erros 'child in a list', select na home page e integração com o banco?
+                    value={formularioIdade.toString()} //mencionar em aula: erros 'child in a list', valores vazios aparecendo no input/tela de abertura, select na home page e integração com o banco?
                     keyboardType="numeric"
                 />
 

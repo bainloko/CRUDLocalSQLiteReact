@@ -4,13 +4,18 @@
 * 20/11/2021, 25/01/2022
 */
 
+//mencionar em aula: erros 'child in a list', valores vazios aparecendo no input/tela de abertura
+//TESTAR O CÓDIGO NOVO FLATLIST!!!! npm i, expo start https://reactnative.dev/docs/virtualizedlist
+
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, TextInput, SafeAreaView, StatusBar, FlatList, TouchableOpacity, Alert } from 'react-native';
 import ContatoServico from '../service/contato_servico';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Contato } from '../model/Contato';
 
-var key = 1, achou = 0;
+const key = useState(null);
+const DATA = [];
+var achou = 0;
 
 //métodos da home
 export default class App extends React.Component {
@@ -183,15 +188,42 @@ export default class App extends React.Component {
         //const { animal } = animal;
         
         const contatoList = lista_array_dados_contato.map((item, key) => {
+            const Item = ({ item, onPress, backgroundColor, textColor }) => (
+                <TouchableOpacity onPress={onPress} style={[styles.itemList, backgroundColor]}>
+                    <Text style={[styles.titleList, textColor]}>ID: {item.id}, Nome: {item.nome}, E-mail: {item.email}, Natural: {item.cidadeNatural}, Idade: {item.idade}, Cor dos olhos: {item.corOlhos}</Text>
+                </TouchableOpacity>
+            );
+              
+            const [selectedId, setSelectedId] = useState(null);
+              
+            const renderItem = ({ item }) => {
+                const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff';
+                const color = item.id === selectedId ? 'white' : 'black';
+
+                return (
+                    <Item
+                        item={item}
+                        onPress={() => {setSelectedId(item.id); alert(`Você clicou no item ${item.title}!`)}}
+                        backgroundColor={{ backgroundColor }}
+                        textColor={{ color }}
+                    />
+                );
+            };
+              
             return (
-                <>
-                    <Text>ID: {item.id}, Nome: {item.nome}, E-mail: {item.email}, Natural: {item.cidadeNatural}, Idade: {item.idade}, Cor dos olhos: {item.corOlhos}</Text>
-                </>
+                <SafeAreaView style={styles.containerList}>
+                <FlatList
+                    data={DATA}
+                    renderItem={renderItem}
+                    keyExtractor={item => item.id}
+                    extraData={selectedId}
+                />
+                </SafeAreaView>
             );
         });
 
         return (
-            <View style={styles.container}>
+            <SafeAreaView style={styles.container}>
                 <Text style={{ fontSize: 20, paddingBottom: 20 }}>CRUD de Contatos</Text>
                 <TextInput
                     style={styles.textInput}
@@ -229,7 +261,7 @@ export default class App extends React.Component {
                     style={styles.textInput}
                     placeholder="Digite a idade..."
                     onChangeText={formularioIdade => { this.setState({ formularioIdade: formularioIdade }) }}
-                    value={formularioIdade.toString()} //mencionar em aula: erros 'child in a list', valores vazios aparecendo no input/tela de abertura, select na home page e integração com o banco?
+                    value={formularioIdade.toString()}
                     keyboardType="numeric"
                 />
 
@@ -240,33 +272,33 @@ export default class App extends React.Component {
                     value={formularioOlhos}
                 />
 
-                <View style={styles.containerTouch}>
+                <SafeAreaView style={styles.containerTouch}>
                     <TouchableOpacity onPress={() => { (formularioNome || formularioEmail || formularioNatural || formularioIdade || formularioOlhos) == null ? Alert.alert("Preencha todos os campos do formulário!") : this.insertContato(formularioNome, formularioEmail, formularioNatural, formularioIdade, formularioOlhos) }} style = {{ alignItems: "center", backgroundColor: 'green' }}>
                         <Icon name="md-add" size={30} color="white" />
                     </TouchableOpacity>
-                </View>
+                </SafeAreaView>
 
-                <View style={styles.containerTouch}>
+                <SafeAreaView style={styles.containerTouch}>
                     <TouchableOpacity onPress={() => { Id_pesquisar == null ? Alert.alert("O campo ID não pode ser vazio!") : this.localizaContato(Id_pesquisar) }} style = {{ alignItems: "center", backgroundColor: 'green' }}>
                         <Icon name="md-search" size={30} color="white" />
                     </TouchableOpacity>
-                </View>
+                </SafeAreaView>
 
-                <View style={styles.containerTouch}>
+                <SafeAreaView style={styles.containerTouch}>
                     <TouchableOpacity onPress={() => { (Id_pesquisar != formularioId) || ((Id_pesquisar && formularioId) == (0 || null)) ? () => {(formularioNome || formularioEmail || formularioNatural || formularioIdade || formularioOlhos) == null ? Alert.alert("Preencha todos os campos do formulário!") : Alert.alert("Não há objetos para atualizar, faça uma pesquisa...") } : this.atualizaContato(formularioId, formularioNome, formularioEmail, formularioNatural, formularioIdade, formularioOlhos) }} style = {{ alignItems: "center", backgroundColor: 'green' }}>
                         <Icon name="md-refresh" size={30} color="white" />
                     </TouchableOpacity>
-                </View>
+                </SafeAreaView>
 
-                <View style={styles.containerTouch}>
+                <SafeAreaView style={styles.containerTouch}>
                     <TouchableOpacity onPress={() => { formularioId == null ? Alert.alert("O campo ID não pode ser vazio!") : this.deleteContato(Id_pesquisar) }} style = {{ alignItems: "center", backgroundColor: 'green' }}>
                         <Icon name="md-remove" size={30} color="white" />
                     </TouchableOpacity>
-                </View>
+                </SafeAreaView>
 
                 {contatoList}
 
-            </View>
+            </SafeAreaView>
         );
     }
 }
@@ -291,5 +323,20 @@ const styles = StyleSheet.create({
     containerTouch: {
         width: 200,
         padding: 10,
-    }
+    },
+    
+    containerList: {
+        flex: 1,
+        marginTop: StatusBar.currentHeight || 0,
+    },
+
+    itemList: {
+        padding: 20,
+        marginVertical: 8,
+        marginHorizontal: 16,
+    },
+
+    titleList: {
+        fontSize: 32,
+    },
 });

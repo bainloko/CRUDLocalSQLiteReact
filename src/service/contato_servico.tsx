@@ -21,6 +21,10 @@ export default class ContatoServico {
                 (_, { insertId, rows }) => {
                     console.log("ID insert " + insertId);
                     resolve(insertId);
+                    reject(() => {
+                        Alert.alert("Não foi possível inserir o contato no Banco de Dados...");
+                        console.log("Não foi possível inserir o contato no Banco de Dados...");
+                    });
                 }), (sqlError) => {
                     console.log(sqlError);
                 }, (txError) => {
@@ -33,18 +37,47 @@ export default class ContatoServico {
         });
     }
 
-    static deleteById(id : number){
-        db.transaction(
+    static findById(id : number){
+        return new Promise((resolve, reject) => db.transaction(
             tx => {
-                tx.executeSql(`delete from ${table} where id = ?;`,
+                tx.executeSql(`select * from ${table} where id = ?;`,
                 [id], (_, { rows }) => {
+                    resolve(rows);
+                    reject(() => {
+                        Alert.alert("Não foi possível encontrar o contato no Banco de Dados...");
+                        console.log("Não foi possível encontrar o contato no Banco de Dados...");
+                    });
                 }), (sqlError) => {
                     console.log(sqlError);
                 }, (txError) => {
                     console.log(txError);
                 }
             }
-        );
+        )).catch(() => {
+            Alert.alert("Não foi possível encontrar o contato no Banco de Dados...");
+            console.log("Não foi possível encontrar o contato no Banco de Dados...");
+        });
+    }
+
+    static findAll(){        
+        return new Promise((resolve, reject) => db.transaction(
+            tx => {
+                tx.executeSql(`select * from ${table}`, [], (_, { rows }) => {
+                    resolve(rows);
+                    reject(() => {
+                        Alert.alert("Não foi possível encontrar os contatos no Banco de Dados...");
+                        console.log("Não foi possível encontrar os contatos no Banco de Dados...");
+                    });
+                }), (sqlError) => {
+                    console.log(sqlError);
+                }, (txError) => {
+                    console.log(txError);
+                }
+            }
+        )).catch(() => {
+            Alert.alert("Não foi possível encontrar os contatos no Banco de Dados...");
+            console.log("Não foi possível encontrar os contatos no Banco de Dados...");
+        });
     }
 
     static updateByObjeto(param : Contato){
@@ -65,38 +98,17 @@ export default class ContatoServico {
         });
     }
 
-    static findById(id : number){
-        return new Promise((resolve, reject) => db.transaction(
+    static deleteById(id : number){
+        db.transaction(
             tx => {
-                tx.executeSql(`select * from ${table} where id = ?;`,
+                tx.executeSql(`delete from ${table} where id = ?;`,
                 [id], (_, { rows }) => {
-                    resolve(rows);
                 }), (sqlError) => {
                     console.log(sqlError);
                 }, (txError) => {
                     console.log(txError);
                 }
             }
-        )).catch(() => {
-            Alert.alert("Não foi possível encontrar o contato no Banco de Dados...");
-            console.log("Não foi possível encontrar o contato no Banco de Dados...");
-        });
-    }
-
-    static findAll(){        
-        return new Promise((resolve, reject) => db.transaction(
-            tx => {
-                tx.executeSql(`select * from ${table}`, [], (_, { rows }) => {
-                    resolve(rows);
-                }), (sqlError) => {
-                    console.log(sqlError);
-                }, (txError) => {
-                    console.log(txError);
-                }
-            }
-        )).catch(() => {
-            Alert.alert("Não foi possível encontrar os contatos no Banco de Dados...");
-            console.log("Não foi possível encontrar os contatos no Banco de Dados...");
-        });
-    }
+        );
+    }       
 }

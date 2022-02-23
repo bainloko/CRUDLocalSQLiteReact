@@ -21,10 +21,6 @@ export default class ContatoServico {
                 (_, { insertId, rows }) => {
                     console.log("ID insert " + insertId);
                     resolve(insertId);
-                    reject(() => {
-                        Alert.alert("Não foi possível inserir o contato no Banco de Dados...");
-                        console.log("Não foi possível inserir o contato no Banco de Dados...");
-                    });
                 }), (sqlError) => {
                     console.log(sqlError);
                 }, (txError) => {
@@ -43,10 +39,6 @@ export default class ContatoServico {
                 tx.executeSql(`select * from ${table} where id = ?;`,
                 [id], (_, { rows }) => {
                     resolve(rows);
-                    reject(() => {
-                        Alert.alert("Não foi possível encontrar o contato no Banco de Dados...");
-                        console.log("Não foi possível encontrar o contato no Banco de Dados...");
-                    });
                 }), (sqlError) => {
                     console.log(sqlError);
                 }, (txError) => {
@@ -64,10 +56,6 @@ export default class ContatoServico {
             tx => {
                 tx.executeSql(`select * from ${table}`, [], (_, { rows }) => {
                     resolve(rows);
-                    reject(() => {
-                        Alert.alert("Não foi possível encontrar os contatos no Banco de Dados...");
-                        console.log("Não foi possível encontrar os contatos no Banco de Dados...");
-                    });
                 }), (sqlError) => {
                     console.log(sqlError);
                 }, (txError) => {

@@ -46,7 +46,7 @@ export default function App(){
         }
     }
     
-    const insertContato = (item1: string, item2: string, item3: string, item4: number, item5: string) => {
+    const insertContato = (item1, item2, item3, item4, item5) => {
         let contato = new Contato();
 
         //cria um id no banco para persistir o objeto
@@ -70,31 +70,33 @@ export default function App(){
 
         return contato;
     }
-    
-    const localizaContato = (id: number) => {
+
+    const localizaContato = (id) => { //erros inexplicáveis. o que tá acontecendo aqui?
         ContatoServico.findById(id).then((response: any) => {
             if (response._array.length > 0 && response != null && response != undefined) {
                 achou = 1;
                 Alert.alert("Contato localizado!");
                 console.log("Contato localizado!");
 
-                let contatopesquisa : Contato = new Contato();
-                response._array.map((item: { id: number; nome: string; email: string; cidadeNatural: string; idade: number; corOlhos: string; }, _key: any) => {
-                    contatopesquisa.id = item.id;
-                    contatopesquisa.nome = item.nome;
-                    contatopesquisa.email = item.email;
-                    contatopesquisa.cidadeNatural = item.cidadeNatural;
-                    contatopesquisa.idade = item.idade;
-                    contatopesquisa.corOlhos = item.corOlhos;
+                let contato = new Contato();
+                response._array.map((item: { id; nome; email; cidadeNatural; idade; corOlhos; }, key) => {
+                    contato.id = item.id;
+                    contato.nome = item.nome;
+                    contato.email = item.email;
+                    contato.cidadeNatural = item.cidadeNatural;
+                    contato.idade = item.idade;
+                    contato.corOlhos = item.corOlhos;
                 });
-                
+
                 //retorna pro usuário os dados localizados no banco (state)
-                setFormularioId(contatopesquisa.id);
-                setFormularioNome(contatopesquisa.nome);
-                setFormularioEmail(contatopesquisa.email);
-                setFormularioNatural(contatopesquisa.cidadeNatural);
-                setFormularioIdade(contatopesquisa.idade);
-                setFormularioOlhos(contatopesquisa.corOlhos);
+                setFormularioId(contato.id);
+                setFormularioNome(contato.nome);
+                setFormularioEmail(contato.email);
+                setFormularioNatural(contato.cidadeNatural);
+                setFormularioIdade(contato.idade);
+                setFormularioOlhos(contato.corOlhos);
+
+                return contato;
             } else {
                 achou = 0;
                 Alert.alert("Não foi possível encontrar este contato...");
@@ -105,7 +107,7 @@ export default function App(){
         }
     }
 
-    const atualizaContato = (item0: number, item1: string, item2: string, item3: string, item4: number, item5: string) => {
+    const atualizaContato = (item0, item1, item2, item3, item4, item5) => {
         let contato = new Contato(); //cria objeto na memória
         contato.id = item0; //seta o atributo id do objeto 
         contato.nome = item1; //seta o atributo nome do objeto 
@@ -115,31 +117,34 @@ export default function App(){
         contato.corOlhos = item5; //seta o atributo corOlhos do objeto
         //com o valor(state) do item
 
-        if (ContatoServico.updateByObjeto(contato)) {
+        if (achou == 1 && formularioId != (0 && null && undefined)) {
+            ContatoServico.updateByObjeto(contato);
+
             Alert.alert("Contato atualizado!");
             console.log("Contato atualizado!");
         } else {
-            Alert.alert("Nome não encontrado...");
-            console.log("Nome não encontrado...");
+            Alert.alert("Contato não encontrado...");
+            console.log("Contato não encontrado...");
         }
     }
 
-    const deleteContato = (id: number) => {
-        if (achou == 1){
-            if (formularioId != (0 && null && undefined)) {
-                ContatoServico.deleteById(id);
-                Alert.alert("Contato excluído com sucesso!\nPesquise outro contato...");
-                console.log("Contato excluído com sucesso!\nPesquise outro contato...");
-            }
+    const deleteContato = (id) => {
+        if (achou == 1 && formularioId != (0 && null && undefined)) {
+            ContatoServico.deleteById(id);
+
+            Alert.alert("Contato excluído com sucesso!\nPesquise outro contato...");
+            console.log("Contato excluído com sucesso!\nPesquise outro contato...");
         } else {
             Alert.alert("ID não encontrado...");
             console.log("ID não encontrado...");
         }
     }
         
-    const contatoList = arrayContato.map((item, _key) => {
+    const contatoList = arrayContato.map((item, key) => { //erros inexplicáveis. o que tá acontecendo aqui? + FlatList
         return (
-            <Text style={styles.titleList}>ID: {item.id}, Nome: {item.nome}, E-mail: {item.email}, Natural: {item.cidadeNatural}, Idade: {item.idade}, Cor dos olhos: {item.corOlhos}</Text>
+            <>
+                <Text style={styles.titleList}>ID: {item.id}, Nome: {item.nome}, E-mail: {item.email}, Natural: {item.cidadeNatural}, Idade: {item.idade}, Cor dos olhos: {item.corOlhos}</Text>
+            </>
         );
     });
 
@@ -201,13 +206,13 @@ export default function App(){
             </View>
 
             <View style={styles.containerTouch}>
-                <TouchableOpacity onPress={() => { ((Id_pesquisar || achou) != (0 && null && undefined)) ? localizaContato(Id_pesquisar) : Alert.alert("Contato não encontrado, ou o campo ID está vazio...") }} style = {{ alignItems: "center", backgroundColor: 'green' }}>
+                <TouchableOpacity onPress={() => { (Id_pesquisar != (0 && null && undefined)) ? localizaContato(Id_pesquisar) : Alert.alert("O campo ID não pode ser vazio!") }} style = {{ alignItems: "center", backgroundColor: 'green' }}>
                     <Icon name="md-search" size={30} color="white" />
                 </TouchableOpacity>
             </View>
 
             <View style={styles.containerTouch}>
-                <TouchableOpacity onPress={() => { ((Id_pesquisar == formularioId && (Id_pesquisar && formularioId)) != (0 && null && undefined)) ? atualizaContato(formularioId, formularioNome, formularioEmail, formularioNatural, formularioIdade, formularioOlhos) : Alert.alert("Não há objetos para atualizar, faça uma pesquisa...") }} style = {{ alignItems: "center", backgroundColor: 'green' }}>
+                <TouchableOpacity onPress={() => { ((Id_pesquisar && formularioId) != (0 && null && undefined)) ? atualizaContato(formularioId, formularioNome, formularioEmail, formularioNatural, formularioIdade, formularioOlhos) : Alert.alert("Não há objetos para atualizar, faça uma pesquisa...") }} style = {{ alignItems: "center", backgroundColor: 'green' }}>
                     <Icon name="md-refresh" size={30} color="white" />
                 </TouchableOpacity>
             </View>

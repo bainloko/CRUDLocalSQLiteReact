@@ -4,13 +4,13 @@
 * 20/11/2021, 25/01/2022, 21/02/2022
 */
 
-import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, StatusBar, FlatList, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Text, TextInput, View, StyleSheet, Alert, TouchableOpacity, StatusBar, FlatList } from 'react-native';
 import ContatoServico from '../service/contato_servico';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Contato } from '../model/Contato';
 
-var achou = 0;
+var achou = false;
 
 export default function App(){
     const [arrayContato, setArrayContato] = useState([]);
@@ -23,13 +23,13 @@ export default function App(){
     const [formularioOlhos, setFormularioOlhos] = useState(null);
         
     //acionado quando o componente é montado
-    React.useEffect(() => {
+    useEffect(() => {
         instanciarContato();
         findAllContatos();
     }, []);
     
     //escuta atualizações na lista
-    React.useEffect(() => {
+    useEffect(() => {
         findAllContatos();
     });
     
@@ -46,11 +46,8 @@ export default function App(){
         }
     }
     
-    const insertContato = (item1, item2, item3, item4, item5) => {
+    function insertContato (item1: string, item2: string, item3: string, item4: number, item5: string){
         let contato = new Contato();
-
-        //cria um id no banco para persistir o objeto
-        const insertId = ContatoServico.addData(contato);
 
         contato.nome = item1; //seta o atributo nome do objeto 
         contato.email = item2; //seta o atributo email do objeto 
@@ -60,7 +57,7 @@ export default function App(){
         //com o valor(state) do item
 
         //testa pra ver se deu certo a criação do id
-        if (insertId != null || insertId != undefined) {
+        if (ContatoServico.addData(contato)) {
             Alert.alert("Novo contato inserido!");
             console.log("Novo contato inserido!");
         } else {
@@ -71,15 +68,13 @@ export default function App(){
         return contato;
     }
 
-    const localizaContato = (id) => { //erros inexplicáveis. o que tá acontecendo aqui?
+    function localizaContato (id: number){ //erros inexplicáveis. o que tá acontecendo aqui?
         ContatoServico.findById(id).then((response: any) => {
             if (response._array.length > 0 && response != null && response != undefined) {
-                achou = 1;
-                Alert.alert("Contato localizado!");
-                console.log("Contato localizado!");
+                achou = true;
 
                 let contato = new Contato();
-                response._array.map((item: { id; nome; email; cidadeNatural; idade; corOlhos; }, key) => {
+                const contatoretorno = () => response._array.map((item: { id: number; nome: string; email: string; cidadeNatural: string; idade: number; corOlhos: string; }, key: any) => {
                     contato.id = item.id;
                     contato.nome = item.nome;
                     contato.email = item.email;
@@ -87,8 +82,9 @@ export default function App(){
                     contato.idade = item.idade;
                     contato.corOlhos = item.corOlhos;
                 });
-
+                
                 //retorna pro usuário os dados localizados no banco (state)
+                setArrayContato(contatoretorno);
                 setFormularioId(contato.id);
                 setFormularioNome(contato.nome);
                 setFormularioEmail(contato.email);
@@ -96,18 +92,24 @@ export default function App(){
                 setFormularioIdade(contato.idade);
                 setFormularioOlhos(contato.corOlhos);
 
-                return contato;
+                return contatoretorno;
             } else {
-                achou = 0;
-                Alert.alert("Não foi possível encontrar este contato...");
-                console.log("Não foi possível encontrar este contato...");
+                achou = false;
             }
         }), (error: any) => {
             console.log(error);
         }
+
+        if (achou){
+            Alert.alert("Contato localizado!");
+            console.log("Contato localizado!");
+        } else {
+            Alert.alert("Não foi possível encontrar este contato...");
+            console.log("Não foi possível encontrar este contato...");
+        }
     }
 
-    const atualizaContato = (item0, item1, item2, item3, item4, item5) => {
+    function atualizaContato (item0: number, item1: string, item2: string, item3: string, item4: number, item5: string){
         let contato = new Contato(); //cria objeto na memória
         contato.id = item0; //seta o atributo id do objeto 
         contato.nome = item1; //seta o atributo nome do objeto 
@@ -117,7 +119,7 @@ export default function App(){
         contato.corOlhos = item5; //seta o atributo corOlhos do objeto
         //com o valor(state) do item
 
-        if (achou == 1 && formularioId != (0 && null && undefined)) {
+        if (achou == true && formularioId != (0 && null && undefined)) {
             ContatoServico.updateByObjeto(contato);
 
             Alert.alert("Contato atualizado!");
@@ -128,8 +130,8 @@ export default function App(){
         }
     }
 
-    const deleteContato = (id) => {
-        if (achou == 1 && formularioId != (0 && null && undefined)) {
+    function deleteContato (id: number){
+        if (achou == true && formularioId != (0 && null && undefined)) {
             ContatoServico.deleteById(id);
 
             Alert.alert("Contato excluído com sucesso!\nPesquise outro contato...");
@@ -140,7 +142,7 @@ export default function App(){
         }
     }
         
-    const contatoList = arrayContato.map((item, key) => { //erros inexplicáveis. o que tá acontecendo aqui? + FlatList
+    const contatoList = arrayContato.map((item: { id: number; nome: string; email: string; cidadeNatural: string; idade: number; corOlhos: string; }, key) => { //FlatList...
         return (
             <>
                 <Text style={styles.titleList}>ID: {item.id}, Nome: {item.nome}, E-mail: {item.email}, Natural: {item.cidadeNatural}, Idade: {item.idade}, Cor dos olhos: {item.corOlhos}</Text>

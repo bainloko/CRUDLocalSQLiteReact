@@ -7,7 +7,7 @@
 import { Conexao } from "./conexao";
 
 var db = null;
-var atualizar = 0 //variavel do professor? // use 1 para apagar e refazer a tabela ou 0 para manter os dados
+var atualizar = 1
 
 export default class DatabaseInit {
     constructor(){
@@ -44,12 +44,12 @@ export default class DatabaseInit {
         }
 
         db.transaction(
-            tx => {
+            (tx: { executeSql: (arg0: string) => void; }) => {
                 for (var i = 0; i < sql.length; i++){
                     console.log("SQL executed: " + sql[i]);
                     tx.executeSql(sql[i]);
                 }
-            }, (error) => {
+            }, (error: any) => {
                 console.log("Um erro aconteceu na execução do SQL: " + JSON.stringify(error));
                 console.log("\n", error);
             }, () => {

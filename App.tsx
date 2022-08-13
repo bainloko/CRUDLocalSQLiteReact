@@ -10,7 +10,7 @@ import DatabaseInit from './src/database/inicializacao';
 
 export default function App(props){
   React.useEffect(() => {
-    new DatabaseInit;
+    new DatabaseInit();
     console.log("Banco de Dados inicializado!");
     console.log("Sistema inicializado!");
   }, []);

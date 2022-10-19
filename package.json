@@ -8,7 +8,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "expo": "~43.0.2",
+    "expo": "~46.0.16",
     "expo-sqlite": "~10.0.3",
     "expo-status-bar": "~1.1.0",
     "flatlist": "^0.0.0",
